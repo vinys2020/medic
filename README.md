@@ -1,2 +1,0 @@
-# diagnosticomedico
-# diagnosticomedico

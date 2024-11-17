@@ -32,6 +32,42 @@
     margin: 20px 0; /* Margen superior e inferior */
   }
 
+  .buscar-container {
+    background-color: #ffffff; /* Fondo blanco para el contenedor */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    padding: 30px; /* Espaciado interno */
+    margin: 20px 0; /* Margen superior e inferior */
+  }
+
+  .result-item {
+    border: none; /* Sin borde en el resultado */
+    padding: 20px; /* Espaciado interno aumentado para mayor comodidad */
+    background-color: #f8f9fa; /* Color de fondo más claro para el resultado */
+    border-radius: 8px; /* Bordes redondeados más pronunciados */
+    margin-bottom: 12px; /* Espacio debajo del resultado */
+    transition: background-color 0.3s ease; /* Transición suave para el efecto hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera para dar profundidad */
+}
+
+.result-item:hover {
+    background-color: #e9ecef; /* Color de fondo más oscuro en hover */
+    cursor: pointer; /* Cambiar el cursor para indicar que es interactivo */
+}
+
+.result-item h4 {
+    font-size: 1.3rem; /* Tamaño de fuente del título */
+    font-weight: bold; /* Negrita para el título */
+    color: #333; /* Color del título */
+    margin-bottom: 10px; /* Espacio debajo del título */
+}
+
+.result-item p {
+    font-size: 1.1rem; /* Tamaño de fuente del detalle */
+    color: #555; /* Color del texto */
+    margin-top: 10px; /* Espacio superior en el texto */
+}
+
   .list-group-item {
     border: none; /* Sin borde en los elementos de la lista */
     padding: 15px; /* Espaciado interno aumentado para mayor comodidad */
@@ -78,7 +114,6 @@
   }
 
   footer {
-    position: fixed; /* Mantiene el footer en la parte inferior de la ventana */
     left: 0; 
     bottom: -100px; /* Mueve el footer fuera de la vista inicialmente */
     width: 100%; 
@@ -161,6 +196,18 @@
     color: rgb(255, 255, 255);
   }
 
+  /* Agrega esta clase en tu archivo CSS */
+  #myNavbar {
+    transition: top 0.8s ease-in-out; /* Transición suave */
+  }
+
+  /* Ajusta el valor de top cuando el navbar se oculte */
+  .navbar-hidden {
+    top: -100px; /* Ajusta según el tamaño de tu navbar */
+  }
+
+  
+
   .custom-button {
     background-color: red; 
     color: white; 
@@ -241,7 +288,6 @@
   }
   
   
-  
   .carousel-control-prev-icon,
   .carousel-control-next-icon {
     background-color: #df1f1f00;
@@ -314,85 +360,12 @@
     text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.438);
   }
   
-  
-  .card:hover {
-      border-color: rgb(253, 2, 253);
-      box-shadow: none;
-      
-  }
-  
-  
-  .card-text::-webkit-scrollbar-thumb {
-    background-color: #999; 
-    border-radius: 3px;
-  }
+
   
   
   
   
   
-  .card-text p {
-    max-width: 100%; 
-    word-wrap: break-word;
-  }
-  
-  .card h3 {
-    text-align: center;
-  }
-  .card p {
-    color: orange;
-    text-align: left;
-    font-size: 1.2rem;
-  }
-  .swiper-container {
-    position: relative;
-    margin: 0 auto;
-    width: 100%;
-  }
-  .swiper {
-    margin: 30px auto;
-    cursor: grab;
-  }
-  .swiper-slide {
-    display: flex;
-    justify-content: center;
-    
-  }
-  .swiper-button-next,
-  .swiper-button-prev {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 10px #ccc;;
-  }
-  .swiper-button-next::after,
-  .swiper-button-prev::after {
-    font-size: 16px;
-    font-weight: bold;
-    color: #000;
-  }
-  .swiper-button-next:hover {
-    transform: scale(1.2) translateX(80%);
-  }
-  .swiper-button-prev:hover {
-    transform: scale(1.2) translateX(-80%);
-  }
-  .swiper-button-next {
-    transform: translateX(100%);
-  }
-  .swiper-button-prev {
-    transform: translateX(-100%);
-  }
-  .swiper-pagination {
-    transform: translateY(200%) !important;
-  }
-  
-  .swiper-pagination-bullet {
-    background: #fff !important;
-    width: 15px !important;
-    height: 15px !important;
-  }
   
   .swiper-slide {
     max-height: 600px; 
@@ -508,6 +481,10 @@
   
     p {
       font-size: 1.1rem;
+    }
+
+    p.text-muted {
+      font-size: 0.9rem; /* Ajusta el tamaño del texto de párrafos con la clase 'text-muted' */
     }
     .custom-article {
       text-align: center; /* Centrar el contenido del artículo */
