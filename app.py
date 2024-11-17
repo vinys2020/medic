@@ -315,5 +315,6 @@ def procesar_respuesta():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Usa el puerto de la variable de entorno o el 5000 por defecto
+    app.run(host="0.0.0.0", port=port, debug=False)
 
