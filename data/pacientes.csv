@@ -30,3 +30,4 @@ edad,sexo,fuma,actividad_fisica,historial_familiar,dieta,estres,visitas_medico,s
 56,F,0,0,0,0,1,0,9,"dolor_de_estomago, vomitos, fiebre, mareos","apendicitis: 40%, gastroenteritis: 20%, hepatitis: 20%, hipertensión: 20%"
 44,F,0,0,0,0,0,0,8,fiebre_alta,"covid19: 50%, gripe_aviaria: 50%"
 44,F,0,0,0,0,0,0,8,"fiebre, vomitos","apendicitis: 18.17%, covid19: 9.09%, cálculos_renales: 9.09%, dengue: 9.09%, gripe: 9.09%, meningitis: 18.17%, migraña: 9.09%, sifilis: 9.09%, hepatitis: 9.09%"
+22,M,0,0,0,0,0,0,5,fiebre,"apendicitis: 11.11%, celulitis_bacteriana: 11.11%, covid19: 11.11%, dengue: 11.11%, gripe: 11.11%, meningitis: 11.11%, neumonía: 11.11%, viruela: 11.11%, sifilis: 11.11%"
