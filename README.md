@@ -2,3 +2,4 @@
 # diagnosticomedic
 # diagnosticomedic
 # diagnosticomedic
+# medic
