@@ -1,33 +1,15 @@
-edad,sexo,fuma,actividad_fisica,historial_familiar,dieta,estres,visitas_medico,sueño,sintomas,diagnostico
-44,M,0,0,0,0,0,0,7,vomitos,"migraña: 50%, gastroenteritis: 50%"
-45,M,0,0,0,0,0,0,7,"vomitos, tos, orina_oscura","gastroenteritis: 25%, gripe: 25%, migraña: 25%, cálculos_renales: 25%"
-33,M,0,0,0,0,0,0,7,"orina_oscura, fiebre_alta","cálculos_renales: 14.29%, dengue: 14.29%, gripe: 14.29%, gripe_aviaria: 14.29%, meningitis: 14.29%, neumonía: 14.29%, viruela: 14.29%"
-44,M,0,0,0,0,0,0,6,vomitos,"migraña: 50%, gastroenteritis: 50%"
-33,M,0,0,0,0,0,0,7,vomitos,migraña: 100%
-33,M,0,0,0,0,0,0,7,"vomitos, tos","gastroenteritis: 33.33%, migraña: 33.33%, gripe: 33.33%"
-33,M,0,0,0,0,0,0,7,"vomitos, tos, orina_oscura","gastroenteritis: 25%, gripe: 25%, migraña: 25%, cálculos_renales: 25%"
-44,M,0,0,0,0,0,0,6,vomitos,"migraña: 50%, gastroenteritis: 50%"
-45,F,0,0,0,0,0,0,6,"vomitos, orina_oscura, dolor_de_cabeza, fiebre","migraña: 50%, cálculos_renales: 50%"
-45,M,0,0,0,0,0,0,7,fiebre_alta,"dengue: 16.67%, gripe: 16.67%, gripe_aviaria: 16.67%, meningitis: 16.67%, neumonía: 16.67%, viruela: 16.67%"
-24,F,1,0,0,1,1,0,8,"dolor_de_garganta, rojez_piel, rigidez_en_el_cuello","dermatitis: 50%, meningitis: 50%"
-24,F,1,0,0,1,1,0,8,"dolor_de_garganta, rojez_piel, rigidez_en_el_cuello","dermatitis: 50%, meningitis: 50%"
-45,M,1,0,0,0,1,0,6,"hemorragia_nazal, confusion_mental",hipertensión: 100%
-18,F,1,0,0,1,1,0,6,tos,gripe: 100%
-70,F,1,0,0,1,1,0,6,orina_oscura,cálculos_renales: 100%
-31,F,1,0,0,1,0,0,6,"sed_excesiva, visibilidad_borrosa",diabetes: 100%
-21,M,1,0,0,0,0,0,8,pérdida_de_peso,tuberculosis: 100%
-23,M,0,0,0,0,0,0,5,"erupcion_cutanea, fatiga_extrema","dengue: 66.67%, dermatitis: 33.33%"
-60,F,1,0,0,0,1,0,6,fiebre,"celulitis_bacteriana: 50%, sifilis: 50%"
-22,M,0,0,0,0,0,0,6,fiebre,"celulitis_bacteriana: 50%, sifilis: 50%"
-33,F,0,0,0,0,0,0,9,fiebre,"apendicitis: 10%, celulitis_bacteriana: 10%, covid19: 10%, dengue: 10%, gripe: 10%, gripe_aviaria: 10%, meningitis: 10%, neumonía: 10%, viruela: 10%, sifilis: 10%"
-44,M,0,0,0,0,0,0,7,erupcion_cutanea,"dengue: 25%, dermatitis: 25%, viruela: 25%, sifilis: 25%"
-67,M,0,0,0,0,0,0,6,perdida_de_olfato,covid19: 100%
-33,F,0,0,0,0,0,0,6,perdida_de_gusto,covid19: 100%
-22,M,0,0,0,0,0,0,5,tos,gripe: 100%
-67,F,1,0,0,1,0,0,8,fatiga,"hipotiroidismo: 50%, hemochromatosis: 50%"
-22,M,0,0,0,0,0,0,5,"dolor_intenso_de_cabeza, orina_oscura, fiebre_alta, mareos","covid19: 33.33%, gripe_aviaria: 33.33%, hipertensión: 33.33%"
-22,M,0,0,0,0,0,0,5,estres,migraña: 100%
-56,F,0,0,0,0,1,0,9,"dolor_de_estomago, vomitos, fiebre, mareos","apendicitis: 40%, gastroenteritis: 20%, hepatitis: 20%, hipertensión: 20%"
-44,F,0,0,0,0,0,0,8,fiebre_alta,"covid19: 50%, gripe_aviaria: 50%"
-44,F,0,0,0,0,0,0,8,"fiebre, vomitos","apendicitis: 18.17%, covid19: 9.09%, cálculos_renales: 9.09%, dengue: 9.09%, gripe: 9.09%, meningitis: 18.17%, migraña: 9.09%, sifilis: 9.09%, hepatitis: 9.09%"
-22,M,0,0,0,0,0,0,5,fiebre,"apendicitis: 11.11%, celulitis_bacteriana: 11.11%, covid19: 11.11%, dengue: 11.11%, gripe: 11.11%, meningitis: 11.11%, neumonía: 11.11%, viruela: 11.11%, sifilis: 11.11%"
+nombre,edad,sexo,fuma,actividad_fisica,historial_familiar,dieta,estres,visitas_medico,sueño,sintomas,diagnostico
+juan,33,F,1,0,0,0,0,0,6,tos,"gripe: 50%, resfriado: 50%"
+franco,23,F,1,0,0,0,1,0,6,fiebre_alta,"covid19: 14.29%, dengue: 14.29%, gripe_aviaria: 14.29%, meningitis: 14.29%, neumonía: 14.29%, viruela: 14.29%"
+tomas,23,F,1,0,0,0,1,0,6,"fiebre_alta, tos","viruela: 50%, resfriado: 50%"
+joaquin,23,F,1,0,0,0,1,0,6,"fiebre_alta, tos","gripe: 40%, gripe_aviaria: 20%, neumonía: 20%, resfriado: 20%"
+hernan,50,M,0,0,0,0,0,0,6,palidez,anemia: 100%
+faculez,22,M,0,0,0,0,0,0,3,fiebre_alta,"covid19: 14.29%, dengue: 14.29%, gripe_aviaria: 14.29%, meningitis: 14.29%, neumonía: 14.29%, viruela: 14.29%"
+Raul,34,F,1,0,0,0,0,0,5,dolor_frontal,sinusitis: 100%
+Carmen,45,M,1,0,0,0,1,0,6,fatiga_profunda,sindrome_de_fatiga_cronica: 100%
+Hector,19,M,0,0,0,0,0,0,5,tos,"gripe: 50%, resfriado: 50%"
+Sebastian,27,M,0,0,0,0,0,0,6,congestion_nasal,alergia: 100%
+faculez,33,M,1,0,0,0,0,0,7,vomitos,"apendicitis: 16.67%, cálculos_renales: 16.67%, gastroenteritis: 16.67%, meningitis: 16.67%, migraña: 16.67%, hepatitis: 16.67%"
+facundo,42,M,0,0,0,0,0,0,8,perdida_de_gusto,covid19: 100%
+faculez,23,M,1,0,0,0,0,0,5,"dolor_corporal, cansancio",gripe: 100%
+faculez,2,M,1,0,0,0,0,0,2,tos,"gripe: 50%, resfriado: 50%"

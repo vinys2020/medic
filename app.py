@@ -7,17 +7,28 @@ import pandas as pd
 import joblib
 import csv
 import matplotlib
-matplotlib.use('Agg')  # Usa el backend 'Agg' para desactivar la GUI
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 import logging
+import firebase_admin
+from firebase_admin import credentials, firestore
+from flask import send_from_directory
 
 
+cred = credentials.Certificate('diagnostico-medicodb-firebase-adminsdk-fbsvc-ccf5810950.json')
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'  
+
+@app.route('/public/<path:filename>')
+def public_files(filename):
+    return send_from_directory('public', filename)
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -30,63 +41,115 @@ if os.path.exists(model_path):
 else:
     print(f"No se encontró el archivo en {model_path}.")
 
-# Cargar detalles de enfermedades desde el CSV
-def cargar_detalles_enfermedades():
-    df = pd.read_csv('data/detalle_enfermedades.csv')  # Lee el archivo CSV
-    # Crear un diccionario donde la clave es el nombre de la enfermedad y el valor es el detalle
-    return {row['Enfermedad'].lower(): row['Descripcion'] for index, row in df.iterrows()}
+def cargar_detalles_enfermedades_firestore():
+    detalles = {}
+    docs = db.collection('Enfermedades').stream()
+    for doc in docs:
+        data = doc.to_dict()
+        nombre = data.get('nombre', '').lower()
+        descripcion = data.get('descripcion', '')
+        if nombre:
+            detalles[nombre] = descripcion
+    return detalles
 
-# Cargar detalles de enfermedades al iniciar el servidor
-detalles_enfermedades = cargar_detalles_enfermedades()
+detalles_enfermedades = cargar_detalles_enfermedades_firestore()
 
 @app.route('/detalle_enfermedades', methods=['POST'])
 def detalle_enfermedad():
-    # Obtener el nombre de la enfermedad desde la solicitud JSON
+
     enfermedad = request.json.get('enfermedad')
 
-    # Verificar que se haya enviado un nombre de enfermedad
     if not enfermedad:
         return jsonify({'error': 'El nombre de la enfermedad es obligatorio.'}), 400
 
-    # Buscar el detalle de la enfermedad (ignorando mayúsculas y minúsculas)
     detalle = detalles_enfermedades.get(enfermedad.lower())
 
     if detalle:
-        # Si se encuentra el detalle, devolver la respuesta con la enfermedad y el detalle
+
         return jsonify({'enfermedad': enfermedad, 'detalle': detalle})
     else:
-        # Si no se encuentra el detalle, devolver un mensaje de error
+
         return jsonify({'error': 'Detalle no encontrado para la enfermedad proporcionada.'}), 404
 
 
 
-def cargar_enfermedades():
+def cargar_enfermedades_firestore():
     prolog = Prolog()
-    df = pd.read_csv('data/enfermedades.csv')
-    
-    for index, row in df.iterrows():
-        enfermedad = row['enfermedad']
-        sintoma = row['sintoma']
-        prolog.assertz(f"sintoma({sintoma}, {enfermedad})")
 
-    return prolog
+    try:
+        docs = db.collection('Enfermedades').stream()
 
-def cargar_preguntas():
-    df = pd.read_csv('data/preguntas.csv')
-    return {row['enfermedad']: row['pregunta'] for index, row in df.iterrows()}
+        for doc in docs:
+            data = doc.to_dict()
 
-def cargar_tratamientos():
-    df = pd.read_csv('data/tratamientos.csv')
-    return {row['enfermedad']: row['tratamiento'] for index, row in df.iterrows()}
+            # Normalizamos el nombre de la enfermedad (espacios a guiones bajos)
+            nombre_original = data.get('nombre', '')
+            if not nombre_original:
+                continue
 
-def cargar_acciones_descartar():
-    df = pd.read_csv('data/acciones_descartar.csv')
-    return {row['enfermedad']: row['accion'] for index, row in df.iterrows()}
+            enfermedad = nombre_original.strip().replace(' ', '_')
 
-prolog = cargar_enfermedades()
-preguntas = cargar_preguntas()
-tratamientos = cargar_tratamientos()
-acciones_descartar = cargar_acciones_descartar()
+            # Cargamos los síntomas
+            sintomas = data.get('sintomas', [])
+            for sintoma in sintomas:
+                sintoma_normalizado = sintoma.strip().replace(' ', '_')
+                regla = f"sintoma({sintoma_normalizado}, {enfermedad})"
+                try:
+                    prolog.assertz(regla)
+                except Exception as e:
+                    print(f"Error al cargar regla Prolog '{regla}': {e}")
+
+        return prolog
+
+    except Exception as e:
+        print(f"Error al cargar enfermedades desde Firestore: {e}")
+        return prolog  # Retorna el prolog, aunque esté vacío para evitar errores
+
+prolog = cargar_enfermedades_firestore()
+
+
+
+def cargar_preguntas_firestore():
+    preguntas = {}
+    docs = db.collection('Enfermedades').stream()
+    for doc in docs:
+        data = doc.to_dict()
+        enfermedad = data.get('nombre', '')
+        pregunta = data.get('pregunta', '')
+        if enfermedad:
+            preguntas[enfermedad] = pregunta
+    return preguntas
+
+preguntas = cargar_preguntas_firestore()
+
+def cargar_tratamientos_firestore():
+    tratamientos = {}
+    docs = db.collection('Enfermedades').stream()
+    for doc in docs:
+        data = doc.to_dict()
+        enfermedad = data.get('nombre', '')
+        tratamiento = data.get('tratamiento', '')
+        if enfermedad:
+            tratamientos[enfermedad] = tratamiento
+    return tratamientos
+
+tratamientos = cargar_tratamientos_firestore()
+
+def cargar_acciones_descartar_firestore():
+    acciones = {}
+    docs = db.collection('Enfermedades').stream()
+    for doc in docs:
+        data = doc.to_dict()
+        enfermedad = data.get('nombre', '')
+        accion = data.get('accion', '')
+        if enfermedad:
+            acciones[enfermedad] = accion
+    return acciones
+
+prolog = cargar_enfermedades_firestore()
+preguntas = cargar_preguntas_firestore()
+tratamientos = cargar_tratamientos_firestore()
+acciones_descartar = cargar_acciones_descartar_firestore()
 
 def normalizar_porcentajes(diagnostico):
     total = sum(diagnostico.values())
@@ -134,7 +197,8 @@ def estadisticas():
 def guardar_riesgo():
     try:
         data = request.json
-        
+
+        nombre = data.get('nombre')
         edad = data.get('edad', '0')
         sexo = data.get('sexo', 'Desconocido')
         fuma = data.get('fuma', '0')
@@ -149,6 +213,7 @@ def guardar_riesgo():
         if not edad or not sintomas:
             return jsonify({'error': 'Edad y síntomas son campos obligatorios'}), 400
 
+        # Normalizar los síntomas
         sintomas_usuario = [sintoma.strip().replace(' ', '_') for sintoma in sintomas.split(',')]
 
         diagnostico_resultados = data.get('resultados', [])
@@ -157,30 +222,29 @@ def guardar_riesgo():
             diagnostico_str = ', '.join([f"{resultado['enfermedad']}: {resultado['porcentaje']}%" for resultado in diagnostico_resultados])
         else:
             diagnostico_str = "No se encontraron enfermedades"
-        
 
-        columns = ['edad', 'sexo', 'fuma', 'actividad_fisica', 'historial_familiar', 'dieta', 'estres', 'visitas_medico', 'sueño', 'sintomas', 'diagnostico']
-
-        file_exists = os.path.isfile('data/pacientes.csv')
-        
-        with open('data/pacientes.csv', mode='a', newline='') as file:
-            writer = csv.writer(file, quoting=csv.QUOTE_MINIMAL)
-            
-            if not file_exists:
-                writer.writerow(columns)
-
-            sintomas_str = ', '.join(sintomas_usuario)
-
-            writer.writerow([edad, sexo, fuma, actividad_fisica, historial_familiar, dieta, estres, visitas_medico, sueño, sintomas_str, diagnostico_str])
+        # ✅ Guardar en Firestore
+        paciente_ref = db.collection('pacientes').document()
+        paciente_ref.set({
+            'nombre': nombre,
+            'edad': int(edad),
+            'sexo': sexo,
+            'fuma': fuma,
+            'actividad_fisica': actividad_fisica,
+            'historial_familiar': historial_familiar,
+            'dieta': dieta,
+            'estres': estres,
+            'visitas_medico': visitas_medico,
+            'sueno': sueño,
+            'sintomas': sintomas_usuario,
+            'diagnostico': diagnostico_str,
+        })
 
         return jsonify({'message': 'Datos guardados con éxito', 'diagnostico': diagnostico_str})
-    
+
     except KeyError as e:
         logger.error(f"KeyError: Faltan datos en la solicitud - {str(e)}")
         return jsonify({'error': f"Datos faltantes: {str(e)}"}), 400
-    except FileNotFoundError as e:
-        logger.error(f"FileNotFoundError: No se pudo acceder al archivo - {str(e)}")
-        return jsonify({'error': "No se pudo acceder al archivo de datos."}), 500
     except Exception as e:
         logger.error(f"Error inesperado: {str(e)}")
         return jsonify({'error': 'Ocurrió un error inesperado. Por favor, inténtelo más tarde.'}), 500
@@ -189,48 +253,93 @@ def guardar_riesgo():
 
 
 
-def generar_grafico_diagnosticos():
-    df = pd.read_csv('data/pacientes.csv')
 
+def generar_grafico_diagnosticos():
+    # Obtener los documentos de la colección 'pacientes'
+    pacientes_ref = db.collection('pacientes')
+    docs = pacientes_ref.stream()
+
+    # Crear una lista de diccionarios con los datos
+    datos = []
+    for doc in docs:
+        paciente = doc.to_dict()
+        if 'diagnostico' in paciente and paciente['diagnostico']:  # Validación
+            datos.append({
+                'diagnostico': paciente['diagnostico']
+            })
+
+    # Crear un DataFrame
+    df = pd.DataFrame(datos)
+
+    if df.empty:
+        print("No hay datos disponibles para generar el gráfico.")
+        return None
+
+    # Procesar para obtener el diagnóstico principal
     df['diagnostico_principal'] = df['diagnostico'].apply(lambda x: x.split(':')[0].strip())
-    
     diagnostico_counts = df['diagnostico_principal'].value_counts()
 
+    # Generar el gráfico
     plt.figure(figsize=(8, 6))
     diagnostico_counts.plot(kind='bar', color='skyblue')
     plt.title('Distribución de Diagnósticos')
     plt.xlabel('Diagnósticos Realizados')
     plt.ylabel('Número de Pacientes')
-    plt.xticks(rotation=45, ha='right', fontsize=8.5)  
-
+    plt.xticks(rotation=45, ha='right', fontsize=8.5)
     plt.tight_layout()
 
+    # Guardar la imagen
     ruta_imagen = os.path.join('static', 'img', 'grafico_diagnosticos.png')
     plt.savefig(ruta_imagen, format='png')
     plt.close()
-    
+
     return ruta_imagen
 
 def generar_grafico_edad_por_diagnostico():
-    df = pd.read_csv('data/pacientes.csv')
-    
-    df['diagnostico_principal'] = df['diagnostico'].apply(lambda x: x.split(':')[0].strip())
-    
-    edad_promedio_por_diagnostico = df.groupby('diagnostico_principal')['edad'].mean()
-    
+    db = firestore.client()
+    pacientes_ref = db.collection('pacientes')
+    docs = pacientes_ref.stream()
+
+    # Recolectar los datos en listas
+    edades = []
+    diagnosticos_principales = []
+
+    for doc in docs:
+        data = doc.to_dict()
+        edad = data.get('edad')
+        diagnostico = data.get('diagnostico')
+
+        if edad is not None and diagnostico:
+            diagnostico_principal = diagnostico.split(':')[0].strip()
+            edades.append(edad)
+            diagnosticos_principales.append(diagnostico_principal)
+
+    # Verificar que haya datos
+    if not edades or not diagnosticos_principales:
+        return None
+
+    # Crear un DataFrame con los datos recolectados
+    df = pd.DataFrame({
+        'edad': edades,
+        'diagnostico_principal': diagnosticos_principales
+    })
+
+    # Agrupar y calcular edad promedio
+    edad_promedio_por_diagnostico = df.groupby('diagnostico_principal')['edad'].mean().sort_values()
+
+    # Generar gráfico
     plt.figure(figsize=(8, 6))
     edad_promedio_por_diagnostico.plot(kind='bar', color='lightgreen')
     plt.title('Edad Promedio por Diagnóstico')
     plt.xlabel('Diagnósticos Realizados')
     plt.ylabel('Edad Promedio')
-    plt.xticks(rotation=45, ha='right', fontsize=8.5)  
-
+    plt.xticks(rotation=45, ha='right', fontsize=8.5)
     plt.tight_layout()
 
     ruta_imagen = os.path.join('static', 'img', 'grafico_edad_por_diagnostico.png')
     plt.savefig(ruta_imagen, format='png')
     plt.close()
-    
+
     return ruta_imagen
 
 
@@ -240,40 +349,47 @@ def generar_grafico_edad_por_diagnostico():
 def iniciar_diagnostico():
     sintomas = request.json['sintomas']
     sintomas_usuario = [sintoma.strip().replace(' ', '_') for sintoma in sintomas.split(',')]
-    
-    diagnostico = diagnosticar(sintomas_usuario)
-    
+
+    diagnostico = diagnosticar(sintomas_usuario)  # Tu función que devuelve dict con enfermedades
+
     if diagnostico:
         session['diagnostico'] = diagnostico
         session['enfermedades'] = list(diagnostico.keys())
         session['respuestas'] = {}
         session['pregunta_index'] = 0
         
-        return jsonify({
-            'pregunta': preguntas.get(session['enfermedades'][0]),
-            'enfermedad': session['enfermedades'][0]
-        })
-    
+        # Obtener datos de la primera enfermedad desde Firestore
+        enfermedad_id = session['enfermedades'][0]
+        doc_ref = db.collection('Enfermedades').document(enfermedad_id)
+        doc = doc_ref.get()
+        
+        if doc.exists:
+            enfermedad_data = doc.to_dict()
+            pregunta = enfermedad_data.get('pregunta', 'No hay pregunta definida')
+            
+            return jsonify({
+                'pregunta': pregunta,
+                'enfermedad': enfermedad_id
+            })
+        else:
+            return jsonify({"message": "Error: enfermedad no encontrada en la base de datos."}), 404
+
     return jsonify({"message": "No se encontraron enfermedades para los síntomas ingresados."})
 
 @app.route('/respuesta', methods=['POST'])
 def procesar_respuesta():
-
     if 'respuestas' not in session:
         session['respuestas'] = {}
-    
     if 'pregunta_index' not in session:
         session['pregunta_index'] = 0
-    
-    if 'enfermedades' not in session:
+    if 'enfermedades' not in session or 'diagnostico' not in session:
+        return jsonify({"error": "Sesión inválida. Por favor inicia un nuevo diagnóstico."}), 400
 
-        session['enfermedades'] = ['enfermedad1', 'enfermedad2', 'enfermedad3']  
+    enfermedad = request.json.get('enfermedad')
+    respuesta = request.json.get('respuesta')
 
-    if 'diagnostico' not in session:
-        session['diagnostico'] = {'enfermedad1': 50, 'enfermedad2': 30, 'enfermedad3': 20}  
-
-    enfermedad = request.json['enfermedad']
-    respuesta = request.json['respuesta']
+    if not enfermedad:
+        return jsonify({"error": "No se indicó la enfermedad para la respuesta."}), 400
 
     session['respuestas'][enfermedad] = respuesta
 
@@ -281,40 +397,42 @@ def procesar_respuesta():
 
     if session['pregunta_index'] < len(session['enfermedades']):
         siguiente_enfermedad = session['enfermedades'][session['pregunta_index']]
+        pregunta_siguiente = preguntas.get(siguiente_enfermedad, "Pregunta no encontrada")
         return jsonify({
-            'pregunta': preguntas.get(siguiente_enfermedad, 'Pregunta no encontrada'),  
+            'pregunta': pregunta_siguiente,
             'enfermedad': siguiente_enfermedad
         })
-    
+
+    # Si ya no quedan preguntas, calcular nuevo diagnóstico
     nuevo_diagnostico = {}
-    
-    for enfermedad, respuesta in session['respuestas'].items():
-        porcentaje_base = session['diagnostico'].get(enfermedad, 0)
-        if respuesta:
-            nuevo_diagnostico[enfermedad] = porcentaje_base
-    
+    for enf, resp in session['respuestas'].items():
+        porcentaje_base = session['diagnostico'].get(enf, 0)
+        if resp:  # Solo si la respuesta es afirmativa
+            nuevo_diagnostico[enf] = porcentaje_base
+
     nuevo_diagnostico = normalizar_porcentajes(nuevo_diagnostico)
 
     resultados = []
-    for enfermedad, porcentaje in nuevo_diagnostico.items():
-        tratamiento = tratamientos.get(enfermedad, "Consulta a tu médico para más información.")
-        accion_descartar = acciones_descartar.get(enfermedad, "Consulta a tu médico para más información.")
+    for enf, porcentaje in nuevo_diagnostico.items():
+        tratamiento = tratamientos.get(enf, "Consulta a tu médico para más información.")
+        accion_descartar = acciones_descartar.get(enf, "Consulta a tu médico para más información.")
         resultados.append({
-            'enfermedad': enfermedad,
+            'enfermedad': enf,
             'porcentaje': porcentaje,
             'tratamiento': tratamiento,
-            'accion_descartar': accion_descartar
+            'accion': accion_descartar
         })
-    
-    session.pop('diagnostico', None)
-    session.pop('enfermedades', None)
+
+    # Limpiar sesión para nuevo diagnóstico
     session.pop('respuestas', None)
     session.pop('pregunta_index', None)
+    session.pop('enfermedades', None)
+    session.pop('diagnostico', None)
 
-    return jsonify(resultados)
+    return jsonify({'resultados': resultados})
 
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Usa el puerto de la variable de entorno o el 5000 por defecto
-    app.run(host="0.0.0.0", port=port, debug=False)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 8080)))
 

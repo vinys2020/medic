@@ -1,5 +1,6 @@
 enfermedad,sintoma
 gripe,fiebre
+gripe,fiebre_alta
 gripe,dolor_de_cuerpo
 gripe,dolor_corporal
 gripe,congestion_nasal
@@ -7,6 +8,7 @@ gripe,dolor_de_garganta
 gripe,fatiga
 gripe,tos
 dengue,fiebre
+dengue,fiebre_alta
 dengue,dolor_de_articulaciones_severo
 dengue,erupcion_cutanea
 dengue,fatiga_extrema
@@ -46,6 +48,7 @@ asma,silbidos_al_respirar
 asma,dolor_en_el_pecho
 asma,falta_de_oxigeno
 neumonía,fiebre
+neumonía,fiebre_alta
 neumonía,tos_con_flema
 neumonía,dificultad_respiratoria
 gastroenteritis,diarrea
@@ -82,6 +85,7 @@ dermatitis,rojez_piel
 dermatitis, sequedad_en_la_piel
 dermatitis, enrojecimiento_de_piel
 gripe_aviaria,fiebre_alta
+gripe_aviaria,fiebre
 gripe_aviaria,dificultad_respiratoria
 gripe_aviaria,dolor_de_musculos
 gripe_aviaria,dolor_de_cuerpo
@@ -89,6 +93,7 @@ gripe_aviaria,tos_seca
 gripe_aviaria,malestar_general
 meningitis,rigidez_en_el_cuello
 meningitis,fiebre
+meningitis,fiebre_alta
 meningitis,nauseas
 meningitis,vomitos
 meningitis,sensibilidad_a_la_luz
@@ -108,6 +113,7 @@ hepatitis,nauseas
 hepatitis,vomitos
 viruela,erupcion_cutanea
 viruela,fiebre
+viruela,fiebre_alta
 viruela,malestar_general
 viruela,dolor_corporal
 viruela,manchas_rojas_en_la_piel
@@ -169,5 +175,5 @@ hemochromatosis,oscurecimiento_de_la_piel
 hemochromatosis,problemas_hepaticos
 sifilis,ulceras_en_genitales
 sifilis,erupcion_cutanea
-sifilis,fiebre
 sifilis,dolor_de_garganta
+sifilis,perdida_de_pelo
