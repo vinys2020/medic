@@ -17,7 +17,6 @@ from firebase_admin import credentials, firestore
 from flask import send_from_directory
 
 
-cred = credentials.Certificate('diagnostico-medicodb-firebase-adminsdk-fbsvc-ccf5810950.json')
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
